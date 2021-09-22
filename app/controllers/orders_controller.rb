@@ -1,4 +1,8 @@
 class OrdersController < ApplicationController
+  before_action :authenticate_user!
+  before_action :move_to_root
+
+
   def index
     @item = Item.find(params[:item_id])
     @order_shipping_address = OrderShippingAddress.new
@@ -32,4 +36,10 @@ class OrdersController < ApplicationController
       currency: 'jpy'
     )
   end
+
+  def move_to_root
+    @item = Item.find(params[:item_id])
+    redirect_to root_path if current_user.id == @item.user_id || Order.exists?(item_id: @item.id)
+  end
+
 end
